@@ -186,6 +186,42 @@ def test_missing_file_raises():
         rr.read_s_parameters()
 
 
+def test_missing_file_is_reported_before_optional_cst_import(monkeypatch, tmp_path):
+    import builtins
+
+    original_import = builtins.__import__
+    attempted = []
+
+    def block_cst_solver(name, *args, **kwargs):
+        if name == 'cst_solver' or name.startswith('cst_solver.'):
+            attempted.append(name)
+            raise ImportError('cst_solver intentionally blocked')
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, '__import__', block_cst_solver)
+    missing = tmp_path / 'missing.cst'
+    with pytest.raises(ResultReaderError, match='不存在'):
+        ResultReader(str(missing)).read_s_parameters()
+    assert attempted == []
+
+
+def test_existing_file_without_cst_solver_reports_dependency_hint(monkeypatch, tmp_path):
+    import builtins
+
+    original_import = builtins.__import__
+
+    def block_cst_solver(name, *args, **kwargs):
+        if name == 'cst_solver' or name.startswith('cst_solver.'):
+            raise ImportError('cst_solver intentionally blocked')
+        return original_import(name, *args, **kwargs)
+
+    existing = tmp_path / 'existing.cst'
+    existing.write_bytes(b'placeholder for path validation')
+    monkeypatch.setattr(builtins, '__import__', block_cst_solver)
+    with pytest.raises(ResultReaderError, match='需要可导入的 cst_solver'):
+        ResultReader(str(existing)).read_s_parameters()
+
+
 # ============================================================
 # 3. 峰值 —— 阶段 4 判据的可执行版本
 # ============================================================

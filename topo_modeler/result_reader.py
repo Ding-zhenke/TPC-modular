@@ -142,14 +142,14 @@ class ResultReader:
         """
         if self._result is None:
             if isinstance(self.source, str):
+                if not os.path.exists(self.source):
+                    raise ResultReaderError(f'工程文件不存在：{self.source}')
                 try:
                     from cst_solver import Result
                 except Exception as exc:            # pragma: no cover - 环境相关
                     raise ResultReaderError(
                         f'读 .cst 结果需要可导入的 cst_solver（{exc!r}）；'
                         f'也可以直接把一个已有 Result 对象传给 ResultReader()') from exc
-                if not os.path.exists(self.source):
-                    raise ResultReaderError(f'工程文件不存在：{self.source}')
                 self._result = Result(self.source)
             else:
                 self._result = self.source

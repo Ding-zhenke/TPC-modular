@@ -14,13 +14,16 @@
 
 | 检查 | 命令/方法 | 结果 |
 |---|---|---|
-| TPC 离线与兼容测试 | `python work/run_clean_pytest.py`；`python -m pytest -q -m 'not integration' --basetemp=work/pytest-ci` | 两种运行均通过，覆盖 `mesh_grid/tri_grid/tests`、`topo_modeler/tests`、`topo_templates/tests`、`tests`；integration 标记由基础测试排除。出现一条外部 fontTools deprecation warning。 |
+| TPC 离线与兼容测试 | `python -m pytest -q -m 'not integration' --basetemp=work/pytest-ci-final` | 538 项通过，1 项 integration 测试按 CI 设计排除；覆盖 `mesh_grid/tri_grid/tests`、`topo_modeler/tests`、`topo_templates/tests`、`tests`。出现一条外部 fontTools deprecation warning。 |
+| ResultReader 离线错误顺序 | 阻止 `cst_solver` 导入，再测试缺失和存在的 `.cst` 路径 | 专项 27 项通过；缺失路径先报文件不存在且未尝试导入，存在路径仍给安装依赖提示。 |
+| ResultReader 最终 wheel 回归 | 隔离 venv 从 `site-packages` 导入最终 wheel，并在脚本内阻止 `cst_solver` | 通过；缺失路径不触发 CST 导入且报告文件不存在，存在路径报告依赖安装提示。 |
 | 参数缺失前置检查 | `python -m pytest topo_modeler/tests/test_multiport_feed.py topo_modeler/tests/test_probe_hole_array.py topo_modeler/tests/test_grin_lens_insitu.py -q` | 58 项通过。测试使用 `get_parameter()` fake，不依赖 `_guards` 私有模块。 |
 | handler 跨包注册与分派 | 隔离 venv 安装两个本地 wheel 后，在 `work/isolated-run` 运行 `..\\venv-cross\\Scripts\\python.exe -I run_cross.py` | 通过，1 项。运行时 `cst_solver`、`tpc_service` 和 `mesh_grid` 均从 `work/venv-cross/Lib/site-packages` 加载。使用 `FakeBackend` 验证服务注册和 solve handler 分派；不代表 CST solve/readback。 |
 | `get_parameter` API 符号 | 在同一隔离 venv 检查 `from cst_solver import setup; hasattr(setup, 'get_parameter')` | 为 `True`。未打开 CST，也未查询 CST 工程参数。 |
 | wheel/sdist 构建 | `python -m build --no-isolation --sdist --wheel --outdir work/dist` | 成功生成 `tpc_topology-0.1.0.tar.gz` 与 `tpc_topology-0.1.0-py3-none-any.whl`。本机 setuptools 发现可选 `bdist_conda` entry point 缺其 conda 模块并输出非致命警告。 |
 | 发行清单边界 | `work/check_artifacts.py` 检查最终 wheel/sdist | wheel 53 项、sdist 98 项；未发现 `cst_solver`、`tpc_service`、`cst_mcp`、`em_enclosure`、`__pycache__` 或 `.pyc`；sdist 包含 `docs/README.md` 和 skills，wheel 不包含文档/skills。 |
 | README 离线示例 | `TopoPath` 构造、`TopoModeler()` 构造与 `close()` | 通过；不触发 CST 初始化。不要调用未配置模型的 `validate()` 并期待返回通过。 |
+| CI actions | `.github/workflows/ci.yml` | 使用 `actions/checkout@v7.0.1` 和 `actions/setup-python@v7.0.0`；纯离线测试/build job 不安装 `cst-automation`。 |
 | 隔离构建模式 | `python -m build --sdist --wheel --outdir work/dist` | 未通过：本机隔离环境初始化时 `ensurepip` 遇 Unicode decode error。改用已安装 build/setuptools 的 `--no-isolation` 成功。 |
 
 ## 未验证边界

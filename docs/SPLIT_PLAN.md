@@ -55,7 +55,7 @@
 
 - [x] 创建独立 `pyproject.toml`：离线基础依赖与 `geometry`、`science`、`yaml`、`cst`、`dev` extras 分离。
 - [x] 确认 MIT 许可证并保留随源包提供的许可证文件。
-- [x] 建立 `topological-modeling`、`topological-schematic`、`lattice-paths` 技能，并从项目内 `.agents/skills` 发现。
+- [x] 建立 `topological-modeling`、`topological-schematic`、`lattice-paths` 技能，统一保存在根目录 `skills/`，由 `AGENTS.md` 指引读取。
 - [x] 增加 README、迁移指南、API/支持矩阵、验证记录、CONTRIBUTING 和离线 CI。
 
 验收：wheel/sdist 清单不含通用服务、CST 驱动、MCP、pycache、原实验资源或 `.venv`；干净环境安装只靠发行包运行，不依赖源目录或 `PYTHONPATH`。

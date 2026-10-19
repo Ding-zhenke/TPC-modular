@@ -1,5 +1,7 @@
 # 项目约定
 
+- 执行本仓库任务前，先阅读 `skills/README.md`，再按任务读取 `skills/<name>/SKILL.md`。技能统一保存在仓库根目录的 `skills/`，由本文件指引读取。
+
 - 职责：拓扑光子晶体的晶格、路径、示意图、模板和专用建模。
 - 离线设计应独立运行；CST 操作通过 cst-automation；不依赖 em-enclosure。
 - 本工作区已进入迁移实施阶段。执行范围、接口约定、逐文件归属和验收状态分别维护在 `docs/SPLIT_PLAN.md`、`docs/MIGRATION_MAP.md` 与 `docs/VALIDATION.md`。

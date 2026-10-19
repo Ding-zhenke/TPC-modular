@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tpc-topology"
+version = "0.1.0"
+description = "Offline topology-photonic-crystal lattices, paths, device templates, and CST adapters"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+authors = [{ name = "Dingzhenke" }]
+keywords = ["topological photonics", "photonic crystal", "lattice", "CST"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = ["numpy>=1.21", "matplotlib>=3.5", "tqdm>=4.60"]
+
+[project.optional-dependencies]
+geometry = ["shapely>=2.0", "ezdxf>=1.0"]
+science = ["scipy>=1.7"]
+yaml = ["PyYAML>=6.0"]
+cst = ["cst-automation>=0.1,<1"]
+dev = ["pytest>=7.0", "build>=1.0", "ruff>=0.5"]
+all = ["shapely>=2.0", "ezdxf>=1.0", "scipy>=1.7", "PyYAML>=6.0"]
+
+[project.urls]
+Repository = "https://github.com/Ding-zhenke/TPC-modular"
+Documentation = "https://github.com/Ding-zhenke/TPC-modular/blob/main/docs/README.md"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mesh_grid*", "topo_modeler*", "topo_templates*", "templates", "tpc_toolkit*", "topo_service*"]
+exclude = ["*.tests", "*.tests.*", "tests*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "mesh_grid/tri_grid/tests", "topo_modeler/tests", "topo_templates/tests"]
+python_files = ["test_*.py"]
+addopts = "-q -m 'not integration'"
+markers = ["integration: requires a locally built cst-automation wheel"]

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "tpc",
+  "version": "0.1.0",
+  "description": "拓扑光子晶体晶格、路径、示意图、器件模板、分析与优化：一次安装，六个 skills。",
+  "author": {"name": "Dingzhenke"},
+  "repository": "https://github.com/Ding-zhenke/TPC-modular",
+  "license": "MIT",
+  "keywords": ["TPC", "photonic-crystal", "lattice", "mesh-grid", "CST"],
+  "extensions": {
+    "com.openai": {
+      "requires_local_executor": true,
+      "interface": {
+        "displayName": "TPC 光子晶体工具箱",
+        "shortDescription": "晶格、路径、示意图、模板、分析与优化",
+        "longDescription": "包含六个技能和离线 Python 源码。支持三角/六边晶格、相区与域壁、DXF、拓扑器件配置与预检、扫描分析和优化。真实 CST 操作通过独立的 cst-automation 与本机 CST。",
+        "developerName": "Dingzhenke",
+        "category": "Developer Tools",
+        "capabilities": ["Read", "Write"],
+        "defaultPrompt": [
+          "用 TPC 生成三角晶格和域壁路径示意图。",
+          "用 TPC 检查功分器配置，先给出真实参数草图。",
+          "用 TPC 分析已有扫描结果并生成报告。"
+        ]
+      }
+    }
+  }
+}

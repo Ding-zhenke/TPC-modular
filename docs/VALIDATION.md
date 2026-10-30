@@ -2,6 +2,34 @@
 
 状态：TPC 离线迁移、包构建、安装和 `cst-automation` handler 跨包分派已完成本地验证。所有 CST 实机 readback、几何 rebuild 和实际电磁求解仍未运行。
 
+## TPC 六技能插件（2026-10-30）
+
+新增 `tpc` 插件入口，根清单与 Codex 兼容清单共用 `skills/`，本地市场标识 `tpc-local`。插件构建白名单包含现有 Python 源码与许可证；没有加入通用 CST 驱动或 MCP。
+
+| 检查 | 实际结果 |
+|---|---|
+| 六项技能 frontmatter | `skill-creator/scripts/quick_validate.py` 全部通过；Windows 使用 `-X utf8` 读取中文 |
+| 插件打包/可移植测试 | 7 项通过；包含解压后导入、技能本地引用、无私有目录/大工程（含嵌套缓存目录）、只读运行环境检查、错误 extra 前置拒绝、损坏导入/过低版本识别及离线冒烟 |
+| 完整离线回归 | 最终 `python -m pytest --basetemp=work/pytest-plugin-final --tb=short`：545 passed、1 deselected；1 条外部 fontTools deprecation warning |
+| 解压后的插件冒烟 | 六个技能入口，三角路径 PNG、六边 DXF、功分器配置预检、合成 S21 指标、两点扫描 HTML/CSV、连续优化及等效介质计算通过；代码确实来自解压目录，未导入 CST |
+| 独立参考技能使用 | 新上下文使用模板、分析、优化三个技能，在插件之外创建任务脚本并执行通过；53 个本地文档链接无断链；发现并修正运行环境输出中工作目录指引不一致 |
+| 全新 Python 环境 | `plugin_runtime.py --prepare` 创建独立 venv，基础依赖与 geometry/science/yaml 安装成功；在新环境运行解压包冒烟全部通过 |
+| Python wheel/sdist | 独立构建环境成功构建；sdist 包含两个插件清单、本地市场配置、三个脚本与全部六个技能；wheel 保持原 Python 模块发行边界 |
+| 旧独立技能冲突检查 | 用户技能目录中的三个同名技能与仓库原版完全一致，无用户自定义差异；安装成功后备份停用以避免重复加载 |
+| 本机实际安装 | 原生 `codex plugin marketplace add` / `plugin add` 成功；`plugin list --marketplace tpc-local --json` 返回 `tpc@tpc-local`、版本 0.1.0、installed=true、enabled=true；缓存内六项技能完整 |
+| 仓库外技能发现 | 实际调用本机 Codex `skills/list`，工作目录位于仓库之外；返回六项 `tpc:<skill-name>`，全部 enabled=true；没有创建聊天或调用模型 |
+| 安装缓存运行 | 在全新独立 Python 环境执行真实安装缓存里的 `verify_plugin.py`，全部离线例子通过，模块来源确实是用户插件缓存而非开发目录 |
+
+当前合成分析数值：110 GHz 的 `S2,1` 为 −6.0205999133 dB（幅度 0.5）；两个扫描点共用该合成曲线。优化数学例子的 seed=7，4 次评估得到 length=16、目标值 4，不是器件优化性能。
+
+本次早期 Python 包构建尝试使用本机旧 setuptools 65.5.0，不能解析现有 `license="MIT"` 格式；随后使用独立构建环境安装新版构建工具。该环境问题与插件 ZIP 无关，不修改用户全局 Python。
+
+独立代码审阅发现并修正两项问题：白名单目录内嵌套 `work/build/dist/venv` 文件可能进入发布包；`find_spec()` 可能把损坏模块误报为可用。对应回归先复现失败，再验证通过。
+
+原三个独立技能已移到用户技能目录之外的 `~/.codex/skill-backups/tpc-plugin-20261030/`，可恢复，未删除。已运行的聊天可能保留旧技能上下文，安装后开新聊天使用插件；若插件界面未刷新再重启应用。
+
+真实 CST 参数表读回、几何 rebuild、电磁求解与器件性能验证没有因插件打包而新增。
+
 ## 源状态与迁移说明
 
 - 迁移源 HEAD：`51e4a63d302f0deea58d2a2df349892087dbfe7`。

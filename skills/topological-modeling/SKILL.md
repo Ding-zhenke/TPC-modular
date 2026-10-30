@@ -5,6 +5,8 @@ description: Use when specifying, preflighting, preparing CST templates for, bui
 
 # Topological modeling
 
+Read the [plugin runtime guide](../runtime.md) for portable code paths and dependencies. For existing device classes use [topological-templates](../topological-templates/SKILL.md); for scans or reports use [topological-analysis](../topological-analysis/SKILL.md).
+
 Use TPC's `topo_modeler` configuration, preflight, builders, and `topo_templates` as the topology source of truth. Keep path and phase calculations offline; instantiate CST only for an explicit model build or solve. For CST operations, follow the `cst-automation` skill and public API.
 
 Before constructing a new device geometry, present a parameter-backed sketch and wait for approval. For existing approved specifications, finish the agreed build and checks without re-asking routine steps.

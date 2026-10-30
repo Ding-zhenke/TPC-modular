@@ -2,6 +2,17 @@
 
 拓扑光子晶体离线晶格、路径、相区、示意图、DXF、器件模板与拓扑专用 CST 建模适配。目标是让纯设计与拓扑几何分析在没有 CST 的环境中运行；只有实际创建/求解 CST 工程时才需要通用 `cst-automation`。
 
+## Codex 插件：一次安装，六个 skills
+
+本仓库同时提供 `tpc` 插件，包含晶格路径、示意图、拓扑建模、器件模板、扫描分析、优化与等效介质六项技能。安装方式、独立运行环境与可分享 ZIP 见[插件说明](docs/PLUGIN.md)。
+
+```powershell
+codex plugin marketplace add "<本仓库或解压后的 tpc 目录>"
+codex plugin add tpc@tpc-local
+```
+
+插件随包提供 Python 源码；首次使用按[运行环境指引](skills/runtime.md)检查依赖。已有 Python 包安装方式继续适用。
+
 ## 能力与依赖
 
 - `mesh_grid`: 三角/六边晶格、路径/相区、裁剪和绘图；几何导出使用 `geometry` extra。
@@ -48,7 +59,7 @@ from topo_modeler import TopoModeler
 path = TopoPath.builder(a=0.25).start(0, 0).move(2, 'c').build()
 modeler = TopoModeler()  # 离线构造，不会连接 CST
 modeler.close()
-print(path.points)
+print(path.xy)
 ```
 
 完整的设备参数、构建入口和证据边界见 [API 与支持矩阵](docs/API_AND_SUPPORT.md)。纯离线 CI 不安装 `cst-automation`；跨包注册测试使用本地构建的实际 `cst-automation` wheel 和 fake backend。真实 CST rebuild、结果 readback 和 solver 需要在安装 CST 的机器上单独验证。

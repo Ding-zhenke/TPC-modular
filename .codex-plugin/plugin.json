@@ -1,0 +1,17 @@
+{
+  "name": "tpc",
+  "version": "0.1.0",
+  "description": "拓扑光子晶体晶格、路径、示意图、器件模板、分析与优化。",
+  "author": {"name": "Dingzhenke"},
+  "repository": "https://github.com/Ding-zhenke/TPC-modular",
+  "license": "MIT",
+  "skills": "./skills/",
+  "requires_local_executor": true,
+  "interface": {
+    "displayName": "TPC 光子晶体工具箱",
+    "shortDescription": "晶格、路径、示意图、模板、分析与优化",
+    "developerName": "Dingzhenke",
+    "category": "Developer Tools",
+    "capabilities": ["Read", "Write"]
+  }
+}

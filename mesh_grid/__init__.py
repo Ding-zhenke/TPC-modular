@@ -15,7 +15,7 @@ mesh_grid — 网格算法库
 
 import importlib
 
-__all__ = ['hex_grid', 'tri_grid', 'plotting']
+__all__ = ['hex_grid', 'tri_grid', 'metal_hex', 'plotting']
 
 
 def __getattr__(name):

@@ -5,6 +5,7 @@ from pathlib import Path
 import subprocess
 import sys
 import zipfile
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -31,12 +32,13 @@ def test_archive_contains_portable_skills_and_code_without_private_files(tmp_pat
         assert skills == {
             'lattice-paths', 'topological-modeling', 'topological-schematic',
             'topological-templates', 'topological-analysis', 'topological-optimization',
+            'metal-hex-topological-modeling',
         }
         forbidden = {'.git', 'work', 'build', 'dist', '__pycache__', '.env',
                      '.pytest_cache', 'cst_solver', 'tpc_service', 'cst_mcp'}
         assert not any(set(Path(n).parts) & forbidden for n in names)
         assert not any(n.endswith(('.pyc', '.cst', '.sat', '.dxf')) for n in names)
-        # All six skill references must resolve inside the extracted package.
+        # All skill references must resolve inside the extracted package.
         bundle.extractall(tmp_path / 'cache with spaces')
     plugin = tmp_path / 'cache with spaces' / 'tpc'
     import re
@@ -141,7 +143,10 @@ def test_offline_smoke_uses_extracted_code_and_outputs_only_to_workspace(tmp_pat
                             cwd=tmp_path, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     status = json.loads(result.stdout)
-    assert len(status['skills']) == 6
+    assert len(status['skills']) == 7
+    assert status['checks']['metal_hex_area_mm2'] == pytest.approx(9.996715627415611)
+    assert status['checks']['metal_hex_core_area_mm2'] == pytest.approx(9.319165634016292)
+    assert (output / 'metal_hex' / 'metal_hex_ab.svg').is_file()
     assert status['checks']['template_class'] == 'PowerDivider'
     assert status['checks']['scan_points'] == 2
     assert abs(status['checks']['s21_db'] + 6.020599913279624) < 1e-9

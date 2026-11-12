@@ -2,9 +2,9 @@
 
 拓扑光子晶体离线晶格、路径、相区、示意图、DXF、器件模板与拓扑专用 CST 建模适配。目标是让纯设计与拓扑几何分析在没有 CST 的环境中运行；只有实际创建/求解 CST 工程时才需要通用 `cst-automation`。
 
-## Codex 插件：一次安装，六个 skills
+## Codex 插件：一次安装，七个 skills
 
-本仓库同时提供 `tpc` 插件，包含晶格路径、示意图、拓扑建模、器件模板、扫描分析、优化与等效介质六项技能。安装方式、独立运行环境与可分享 ZIP 见[插件说明](docs/PLUGIN.md)。
+本仓库同时提供 `tpc` 插件，包含晶格路径、示意图、拓扑建模、器件模板、扫描分析、优化与等效介质七项技能，含金属六边晶格。安装方式、独立运行环境与可分享 ZIP 见[插件说明](docs/PLUGIN.md)。
 
 ```powershell
 codex plugin marketplace add "<本仓库或解压后的 tpc 目录>"
@@ -79,3 +79,18 @@ print(path.xy)
 - [贡献与验证指南](CONTRIBUTING.md)
 
 几何预览、预检或 mock 结果不代表 CST 实际读回或求解成功，也不能单独证明拓扑带隙、Chern 数或单向传输。
+
+
+### 金属六边晶格直波导
+
+安装 `tpc-topology[geometry]` 后，可离线生成居中金属晶格及可调叉形馈源：
+
+```python
+from pathlib import Path
+from topo_templates.fork_waveguide import ForkWaveguide
+
+device = ForkWaveguide()
+files = device.preview(Path('outputs/fork_waveguide').resolve())
+```
+
+默认 10a AB 晶格与上下半行边界、共享槽口/叉口间隙及双枝节参数见[金属晶格模块说明](docs/METAL_HEX.md)。CST 几何接口只提交建模命令，真实 CST 读回与求解须单独验证。

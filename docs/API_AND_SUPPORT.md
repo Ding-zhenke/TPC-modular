@@ -11,3 +11,5 @@
 | 拓扑任务 handler | `topo_service` | 取决于 handler 类型 | `cst` extra | 通过 `RunService.register_handler()` 注册；fake backend 服务闭环由跨包集成测试验证；真实 CST 未验证 |
 
 `templates` 是有期限兼容名，不推荐给新代码。所有离线测试仅证明所覆盖的 Python/算法性质。几何预览不等于 CST rebuild；CST rebuild 不等于 solver 成功；solver 成功也不自动证明拓扑/隔离性能。
+
+金属六边晶格、参数化叉形探针、离线预览和 CST 几何接口见 [金属晶格说明](METAL_HEX.md)。实际 CST 构建、读回和求解未验证。

@@ -1,4 +1,4 @@
-"""Exercise all six installed skills offline, writing examples only to --output."""
+"""Exercise all installed skills offline, writing examples only to --output."""
 import argparse
 import json
 import math
@@ -26,10 +26,14 @@ def verify(output: Path):
     from topo_modeler.scanner import ParameterScan, value_metric
     from topo_modeler.optimizer import GeneticOptimizer, continuous_variables
     from tpc_toolkit.effective_medium import effective_permittivity
+    from topo_templates.metal_hex import MetalHexStraight
+    from mesh_grid.metal_hex import MetalHexSpec
+    from topo_templates.fork_waveguide import ForkWaveguide
 
     skills = sorted(p.parent.name for p in (ROOT / 'skills').glob('*/SKILL.md'))
     expected = {'lattice-paths', 'topological-modeling', 'topological-schematic',
-                'topological-templates', 'topological-analysis', 'topological-optimization'}
+                'topological-templates', 'topological-analysis', 'topological-optimization',
+                'metal-hex-topological-modeling'}
     assert set(skills) == expected, skills
     path = TopoPath.builder(a=0.25).start(0, 0).move(2, 'c').build()
     points = path.xy
@@ -76,6 +80,23 @@ def verify(output: Path):
     assert result.improved and result.evaluations <= 12
     opt.report(result, path=str(output / 'optimization.html'))
     assert math.isclose(effective_permittivity(12, 1, 1, 1), 6.5)
+    metal = MetalHexStraight()
+    metal.preview(output / 'metal_hex')
+    metal_area = metal.geometry().metal.area
+    assert math.isclose(metal_area, 9.996715627415611, abs_tol=1e-9)
+    assert math.isclose(metal.geometry().core_metal.area, 9.319165634016292, abs_tol=1e-9)
+    fork=ForkWaveguide()
+    fork.preview(output / 'fork_waveguide')
+    assert math.isclose(fork.spec.y_bounds[1],2.624056973466849,abs_tol=1e-9)
+    for layout in ('BA', 'A_air'):
+        device = MetalHexStraight(MetalHexSpec(layout=layout))
+        device.preview(output / 'metal_hex')
+        geometry = device.geometry()
+        if layout == 'A_air':
+            assert geometry.phase_b.is_empty and geometry.core_metal.bounds[1] >= 0
+            assert math.isclose(geometry.substrate.bounds[1], -.606)
+        else:
+            assert geometry.phase_a.bounds[3] <= 0 and geometry.phase_b.bounds[1] >= 0
     cst_loaded = any(n.split('.')[0] in {'cst', 'cst_solver', 'cst_automation'}
                      for n in sys.modules)
     assert not cst_loaded, 'Offline checks must not import a CST backend'
@@ -86,7 +107,8 @@ def verify(output: Path):
         'skills': skills, 'output': str(output),
         'checks': {'template_class': kwargs['_class'], 'scan_points': len(scan.succeeded),
                    's21_db': s21, 'optimization_evaluations': result.evaluations,
-                   'cst_loaded': cst_loaded},
+                   'cst_loaded': cst_loaded, 'metal_hex_area_mm2': metal_area,
+                   'metal_hex_core_area_mm2': metal.geometry().core_metal.area},
         'evidence': 'Synthetic offline API examples only; no CST build, readback or solve.',
     }
 

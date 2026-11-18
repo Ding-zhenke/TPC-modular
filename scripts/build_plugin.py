@@ -13,8 +13,9 @@ TREES = {
     'topo_templates': {'.py'}, 'templates': {'.py'},
     'tpc_toolkit': {'.py'}, 'topo_service': {'.py'},
     'skills': {'.md', '.yaml'}, 'docs': {'.md'}, 'tests': {'.py'},
+    'tpc_editor': {'.py', '.html', '.css', '.js'},
 }
-SCRIPTS = ('build_plugin.py', 'plugin_runtime.py', 'verify_plugin.py')
+SCRIPTS = ('build_plugin.py', 'plugin_runtime.py', 'verify_plugin.py', 'open_path_editor.py')
 EXCLUDED_DIRS = {'work', 'build', 'dist', 'venv', 'node_modules', '__pycache__'}
 
 

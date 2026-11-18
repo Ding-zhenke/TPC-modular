@@ -54,6 +54,8 @@
 | `save_multi_dxf(hex_groups, filename, layer_name)` | 分组导出 DXF（多图层） |
 | `read_and_display_dxf_matplotlib(filename)` | 读取并显示 DXF |
 
+两个 DXF 导出入口均按毫米写入，合并区域的外圈与内部孔环分别保存为同层的闭合多段线。
+
 ## 快速开始
 
 ```python

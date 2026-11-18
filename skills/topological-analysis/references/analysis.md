@@ -23,6 +23,8 @@ print(reader.value_at('S2,1', 110.0))  # 20*log10(0.5) = -6.0206 dB
 
 频率单位由数据源确认再统一为 GHz；已有 dB 数据先按 `10**(dB/20)` 转成幅度。端口方向取自目标工程，不由文件名或偏置极性推断。`.cst` 路径读取需要外部 CST 结果 API；`resonances()` / `resonance_shift()` 和 `tpc_toolkit.curves/s2p` 需要 `cst-automation` 离线解析模块。
 
+内存数据源使用 `reader.export_csv(path, in_db=False)` 导出复数，每条曲线有 `_re`、`_im` 两列。合写一个 CSV 时，各曲线的频率序列需一致。
+
 扫描的两种 runner 返回值不能混淆：
 
 | 返回值 | 含义 |
@@ -44,6 +46,7 @@ scan = ParameterScan(
     example_config('straight_waveguide'), {'length': [8, 10]},
     runner=lambda point: reader, workdir=str(out),
     metric_specs={'S21@110': value_metric('S2,1', 110.0)},
+    required_metrics=['S21@110'],
 )
 print([(p.name, p.params) for p in scan.plan()])
 scan.run()
@@ -53,3 +56,5 @@ scan.report(str(out / 'scan.html'))
 ```
 
 这里两个扫描点复用同一合成曲线，验证汇总接口而非参数对性能的影响。真实 runner 必须把各点参数映射到各自结果；保留 `failed`、错误详情、运行身份和指标缺项。批处理接口见 [batch.py](../../../topo_modeler/batch.py)，结构化审计见 [audit.py](../../../topo_modeler/audit.py)。
+
+`required_metrics` 适用于指标字典和 reader。缺少指定指标或值为 NaN、无穷大时，该点记入 `scan.failed`。默认空序列允许只执行、不提取指标的扫描。再次调用 `run()` 会重新评估各点，汇总只包含本次的指标和错误。

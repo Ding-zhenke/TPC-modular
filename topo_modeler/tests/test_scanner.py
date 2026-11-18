@@ -205,6 +205,28 @@ def test_audit_records_every_point(tmp_path):
     assert any(r['metrics'] for r in records)
 
 
+@pytest.mark.parametrize('payload', [None, {}, {'loss': float('nan')}, {'loss': float('inf')}])
+def test_required_metrics_validate_each_attempt_without_stale_results(tmp_path, payload):
+    scan = ParameterScan(_base(), {'length': [16]}, workdir=str(tmp_path),
+                         required_metrics=['loss'])
+    scan.run(lambda p: {'loss': 0.0, 'old': 5})
+    assert len(scan.succeeded) == 1
+    scan.run(lambda p: payload)
+    point, = scan.failed
+    assert 'loss' in point.error and 'old' not in point.metrics
+    scan.run(lambda p: {'loss': -1})
+    assert point.ok and not point.error and not scan.last_errors
+
+
+def test_required_reader_metric_records_calculation_failure(tmp_path):
+    scan = ParameterScan(_base(), {'length': [16]}, workdir=str(tmp_path),
+                         metric_specs={'loss': lambda reader: 1 / 0},
+                         required_metrics=['loss'])
+    scan.run(lambda p: _FakeReader())
+    point, = scan.failed
+    assert 'ZeroDivisionError' in scan.last_errors[f'{point.name}:loss']
+
+
 # ============================================================
 # 4. 指标工厂
 # ============================================================

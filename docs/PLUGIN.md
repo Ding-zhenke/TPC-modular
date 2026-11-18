@@ -1,6 +1,6 @@
 # TPC 插件
 
-插件标识 `tpc`，本地市场标识 `tpc-local`，初始版本 `0.4.0`。一次安装可获得[七个 skills](../skills/README.md)：晶格路径、示意图、拓扑建模、器件模板、扫描分析、优化与等效介质。
+插件标识 `tpc`，本地市场标识 `tpc-local`，当前源码版本 `0.5.0`。一次安装可获得[七个 skills](../skills/README.md)：晶格路径、示意图、拓扑建模、器件模板、扫描分析、优化与等效介质。
 
 ## 安装
 
@@ -24,7 +24,7 @@ codex plugin list --marketplace tpc-local --json
 python -B scripts/build_plugin.py --output dist
 ```
 
-输出 `dist/tpc-0.4.0.zip`，内部只有一个 `tpc/` 插件目录，含代码、技能、文档、许可证和验收脚本。解压后以其 `tpc/` 为市场根目录注册，再安装同一插件即可。发布包的市场配置是可移植相对路径，不带开发机路径。
+输出 `dist/tpc-0.5.0.zip`，内部只有一个 `tpc/` 插件目录，含代码、技能、文档、许可证和验收脚本。解压后以其 `tpc/` 为市场根目录注册，再安装同一插件即可。发布包的市场配置是可移植相对路径，不带开发机路径。
 
 打包器按目录与扩展名白名单选文件，不复制整个工作树；排除 `.git`、`work`、缓存、环境、工程大文件和机器配置。根 `plugin.json` 使用 Agent Plugins 清单，`.codex-plugin/plugin.json` 提供 Codex 兼容入口；技能唯一源位于 `skills/`。本插件没有 MCP 或自动启动钩子。
 

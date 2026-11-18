@@ -812,6 +812,19 @@ def create_hex_polygon(center, cell_width, theta=np.pi / 6):
     return Polygon(points)
 
 
+def _write_grid_layer(doc, polygons, layer, precision):
+    doc.layers.new(name=layer, dxfattribs={"color": 1})
+    merged = unary_union(polygons).buffer(1e-6).buffer(-1e-6)
+    if merged.is_empty:
+        return
+    parts = merged.geoms if merged.geom_type == 'MultiPolygon' else [merged]
+    msp = doc.modelspace()
+    for polygon in parts:
+        for ring in (polygon.exterior, *polygon.interiors):
+            points = [(round(x, precision), round(y, precision)) for x, y in ring.coords[:-1]]
+            msp.add_lwpolyline(points, close=True, dxfattribs={"layer": layer})
+
+
 def save_to_dxf(hex_all, filename="hex_grid.dxf", layer_name="hexgrid", precision=6):
     """将六边形网格合并后导出为 DXF 文件
 
@@ -825,26 +838,8 @@ def save_to_dxf(hex_all, filename="hex_grid.dxf", layer_name="hexgrid", precisio
         precision: int，坐标保留小数位数（默认 6），
                    设为较小值（如 3~4）可降低文件大小、加速 CST 导入
     """
-    doc = ezdxf.new(dxfversion="R2010")
-    msp = doc.modelspace()
-    # 添加图层
-    doc.layers.new(name=layer_name, dxfattribs={"color": 1})  # 红色
-
-    all_poly = unary_union(hex_all)
-    all_poly = all_poly.buffer(1e-6).buffer(-1e-6)
-
-    def _add_poly(poly):
-        points = [(round(x, precision), round(y, precision))
-                  for x, y in poly.exterior.coords[:-1]]
-        msp.add_lwpolyline(points, close=True, dxfattribs={"layer": layer_name})
-
-    # 如果是 MultiPolygon，需要遍历
-    if all_poly.geom_type == 'MultiPolygon':
-        for poly in all_poly.geoms:
-            _add_poly(poly)
-    else:
-        _add_poly(all_poly)
-
+    doc = ezdxf.new(dxfversion="R2010", units=ezdxf.units.MM)
+    _write_grid_layer(doc, hex_all, layer_name, precision)
     doc.saveas(filename)
     print(f"DXF 文件已保存: {filename}")
 
@@ -861,29 +856,9 @@ def save_multi_dxf(hex_groups, filename="hex_grid.dxf", layer_name="hexgrid", pr
         layer_name: str，DXF 图层名前缀
         precision: int，坐标保留小数位数（默认 6）
     """
-    doc = ezdxf.new(dxfversion="R2010")
-    msp = doc.modelspace()
-
+    doc = ezdxf.new(dxfversion="R2010", units=ezdxf.units.MM)
     for i in tqdm(range(len(hex_groups))):
-        group = hex_groups[i]
-        merged = unary_union(group)
-        merged = merged.buffer(1e-6).buffer(-1e-6)
-
-        # 添加图层
-        layer = layer_name + str(i)
-        doc.layers.new(name=layer, dxfattribs={"color": 1})
-
-        def _add_poly(poly):
-            points = [(round(x, precision), round(y, precision))
-                      for x, y in poly.exterior.coords[:-1]]
-            msp.add_lwpolyline(points, close=True, dxfattribs={"layer": layer})
-
-        # 如果是 MultiPolygon，需要遍历
-        if merged.geom_type == 'MultiPolygon':
-            for poly in merged.geoms:
-                _add_poly(poly)
-        else:
-            _add_poly(merged)
+        _write_grid_layer(doc, hex_groups[i], layer_name + str(i), precision)
 
     doc.saveas(filename)
     print(f"DXF 文件已保存: {filename}")

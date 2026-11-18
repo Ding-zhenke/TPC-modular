@@ -369,15 +369,22 @@ class ResultReader:
             os.makedirs(parent, exist_ok=True)
         names = sorted(data)
         freq = data[names[0]][0]
+        for name in names[1:]:
+            if data[name][0] != freq:
+                raise ResultReaderError(f'{name} 与 {names[0]} 的频率网格不同，无法写入同一 CSV 频率列')
+        columns = names if in_db else [f'{name}_{part}' for name in names for part in ('re', 'im')]
         with open(path, 'w', encoding='utf-8-sig', newline='') as fh:
             import csv as _csv
             writer = _csv.writer(fh)
-            writer.writerow(['freq_GHz'] + names)
+            writer.writerow(['freq_GHz'] + columns)
             for i in range(len(freq)):
                 row = [f'{freq[i]:.10g}']
                 for name in names:
                     v = data[name][1][i]
-                    row.append(f'{_to_db([v])[0]:.10g}' if in_db else f'{v.real:.10g}')
+                    if in_db:
+                        row.append(f'{_to_db([v])[0]:.10g}')
+                    else:
+                        row.extend((repr(v.real), repr(v.imag)))
                 writer.writerow(row)
         return path
 

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tpc-topology"
-version = "0.4.0"
+version = "0.5.0"
 description = "Offline topology-photonic-crystal lattices, paths, device templates, and CST adapters"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -32,8 +32,11 @@ Documentation = "https://github.com/Ding-zhenke/TPC-modular/blob/main/docs/READM
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["mesh_grid*", "topo_modeler*", "topo_templates*", "templates", "tpc_toolkit*", "topo_service*"]
+include = ["mesh_grid*", "topo_modeler*", "topo_templates*", "templates", "tpc_toolkit*", "topo_service*", "tpc_editor*"]
 exclude = ["*.tests", "*.tests.*", "tests*"]
+
+[tool.setuptools.package-data]
+tpc_editor = ["static/*.html", "static/*.css", "static/*.js"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "mesh_grid/tri_grid/tests", "topo_modeler/tests", "topo_templates/tests"]

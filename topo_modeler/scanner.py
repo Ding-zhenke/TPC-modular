@@ -192,6 +192,7 @@ class ParameterScan:
     :param apply_to: str 或 dict, 参数写进哪个配置小节；
         传字符串表示全部写进该小节，传 dict 表示 ``{参数名: 小节}``
     :param model_type: str 可选, 覆盖 `base_config` 里的 `model.type`
+    :param required_metrics: 扫描点成功所需的有限数值指标名，默认不要求指标
     :param dry_run: bool, True 时 `run()` 只枚举不执行（等于只调 `plan()`）
     """
 
@@ -199,7 +200,7 @@ class ParameterScan:
                  runner: Optional[Callable] = None, workdir: str = '.',
                  audit=None, metric_specs: Optional[Dict[str, Callable]] = None,
                  apply_to: Any = 'geometry', model_type: Optional[str] = None,
-                 name: Optional[str] = None):
+                 name: Optional[str] = None, *, required_metrics: Sequence[str] = ()):
         if not params:
             raise ScanError('params 不能为空 —— 没有要扫描的参数')
         self.axis_names: List[str] = list(params.keys())
@@ -216,6 +217,8 @@ class ParameterScan:
         self.runner = runner
         self.audit = audit
         self.metric_specs: Dict[str, Callable] = dict(metric_specs or {})
+        self.required_metrics = ((required_metrics,) if isinstance(required_metrics, str)
+                                 else tuple(required_metrics))
         self.model_type = model_type
         self.stem = name or (str(base_config.get('model', {}).get('type', 'model')))
         self.apply_to = apply_to
@@ -322,12 +325,24 @@ class ParameterScan:
                 '  runner(point) 应返回三者之一：.cst 路径 / ResultReader / 指标字典。')
         os.makedirs(self.workdir, exist_ok=True)
 
-        for point in self.plan() if self._points is None else self._points:
+        self.last_errors.clear()
+        points = self.points
+        for point in points:
+            point.status = 'pending'
+            point.error = ''
+            point.metrics.clear()
+            point.duration_s = 0.0
+
+        for point in points:
             point.status = 'running'
             t0 = time.perf_counter()
             try:
                 payload = runner(point)
                 self._absorb(point, payload)
+                missing = [name for name in self.required_metrics
+                           if name not in point.metrics or not math.isfinite(point.metrics[name])]
+                if missing:
+                    raise ScanError('缺少有效的必需指标：' + ', '.join(missing))
                 point.status = 'ok'
             except BaseException as exc:                     # noqa: BLE001
                 point.status = 'error'
@@ -407,7 +422,7 @@ class ParameterScan:
     @property
     def metric_names(self) -> List[str]:
         """出现过的指标名（保持首次出现顺序）。"""
-        names: List[str] = list(self.metric_specs)
+        names: List[str] = list(dict.fromkeys((*self.metric_specs, *self.required_metrics)))
         for point in self.points:
             for key in point.metrics:
                 if key not in names:

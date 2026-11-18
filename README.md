@@ -72,6 +72,16 @@ files = device.preview(Path('outputs/fork_waveguide').resolve())
 
 默认 10a AB 晶格与上下半行边界、共享槽口/叉口间隙及双枝节参数见[金属晶格模块说明](docs/METAL_HEX.md)。CST 几何接口只提交建模命令，真实 CST 读回与求解须单独验证。
 
+### 点击域壁点绘制路径
+
+安装 `geometry` extra 后，在本机浏览器中打开编辑器：
+
+```powershell
+python -B -m tpc_editor --workspace "<你的设计目录>"
+```
+
+选择并核对三角孔晶胞，点击域壁路径点；结束本段后从已有点接出分支。支持相区 A/B 分配、JSON 保存重开、SVG/PNG 尺寸图，以及通过几何检查后的毫米 DXF 版图导出。启动插件分发内的编辑器可使用 `scripts/open_path_editor.py`。详见[路径编辑器](docs/PATH_EDITOR.md)。
+
 ## 兼容入口
 
 旧模块名 `mesh_grid`、`topo_modeler`、`topo_templates`、`templates` 和 `tpc_toolkit` 会保留。`templates` shim 仅转发拓扑模板，暂定保留一个次版本周期后移除；新代码应使用 `topo_templates`。`tpc_toolkit.curves` 与 `.s2p` 延迟导入 `cst_automation` 的唯一实现；使用它们时需安装提供离线数据子模块的通用包。

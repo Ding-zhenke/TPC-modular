@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "tpc",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "拓扑光子晶体晶格、路径、示意图、器件模板、分析、优化与金属六边晶格：七项技能。",
   "author": {
     "name": "Dingzhenke"

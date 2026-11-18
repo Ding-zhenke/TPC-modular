@@ -21,6 +21,7 @@
     pytest topo_modeler/tests/test_result_reader.py -v
 """
 
+import csv
 import math
 import os
 import sys
@@ -300,9 +301,25 @@ def test_export_csv_falls_back_when_backend_lacks_exporter(tmp_path):
 
 
 def test_export_csv_re_im_mode(tmp_path):
-    rr = ResultReader(FakeResult(with_exporter=False))
-    p = rr.export_csv(str(tmp_path / 'c.csv'), in_db=False)
-    assert 'S1,1' in open(p, encoding='utf-8-sig').read().splitlines()[0]
+    data = {'S2,1': [(310.0, -0.3+0.4j)], 'S1,1': [(310.0, -0.125j)]}
+    rr = ResultReader(FakeResult(data=data, with_exporter=False))
+    path = tmp_path / 'c.csv'
+    rr.export_csv(str(path), in_db=False)
+    with path.open(encoding='utf-8-sig', newline='') as stream:
+        row, = csv.DictReader(stream)
+    for name, samples in data.items():
+        assert complex(float(row[name + '_re']), float(row[name + '_im'])) == samples[0][1]
+
+
+@pytest.mark.parametrize('second_grid', [[320], [310, 320]])
+def test_fallback_export_checks_frequencies_before_replacing_file(tmp_path, second_grid):
+    data = {'S1,1': [(310, 1)], 'S2,1': [(freq, 1) for freq in second_grid]}
+    rr = ResultReader(FakeResult(data=data, with_exporter=False))
+    path = tmp_path / 'existing.csv'
+    path.write_bytes(b'previous')
+    with pytest.raises(ResultReaderError, match='频率网格不同'):
+        rr.export_csv(str(path))
+    assert path.read_bytes() == b'previous'
 
 
 def test_plot_all_writes_self_contained_html(tmp_path):

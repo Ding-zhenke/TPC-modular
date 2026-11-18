@@ -21,6 +21,8 @@ CST 使用前需安装匹配版本的 `cst-automation` 并配置本机 CST Studi
 
 ## 兼容边界
 
+离线导出的两处修正涉及下游读取脚本。六边晶格 DXF 在文件中声明毫米，旧文件若在 CAD 中手动按毫米导入，新导出文件可直接读取其单位。没有自带 CSV 导出器的数据源使用 `ResultReader.export_csv(in_db=False)` 时，每条曲线按 `名称_re` 和 `名称_im` 两列读取。早期单列文件只保存了实部，恢复相位需要用原始复数数据重新导出。
+
 - `templates` 仍作为一个次版本周期 shim；新代码使用 `topo_templates`。
 - `tpc_toolkit.curves` 和 `tpc_toolkit.s2p` 保留旧导入入口，但函数实现位于 `cst-automation`。使用这两个入口需安装其发行包；不使用数据分析时，基础拓扑路径与相区功能不需要通用包。
 - 旧 `tpc_service` 与 `cst_mcp` 不再由 TPC 分发；改用 `cst-automation` 的通用服务/MCP，并注册 `topo_service` handler。

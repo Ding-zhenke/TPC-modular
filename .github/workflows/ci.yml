@@ -19,5 +19,5 @@ jobs:
         run: python -m pytest
       - name: Build wheel and source distribution
         run: python -m build --sdist --wheel
-      - name: Build portable six-skill plugin
+      - name: Build portable plugin
         run: python -B scripts/build_plugin.py --output dist

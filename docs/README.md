@@ -1,10 +1,13 @@
 # TPC 文档
 
-- [安装、快速示例与项目边界](../README.md)
-- [拆分与实施计划](SPLIT_PLAN.md)
-- [逐文件迁移归属](MIGRATION_MAP.md)
-- [验证记录与未验证边界](VALIDATION.md)
-- [迁移指南](MIGRATION.md)
-- [API 与支持矩阵](API_AND_SUPPORT.md)
-- [技能目录](../skills/README.md)
-- [贡献与验证指南](../CONTRIBUTING.md)
+## 当前工作入口
+
+- [安装与快速示例](../README.md) · [任务技能目录](../skills/README.md)
+- [API 与支持矩阵](API_AND_SUPPORT.md) · [按版本与任务记录的验证证据](VALIDATION.md)
+- [金属六边晶格与探针](METAL_HEX.md)
+- [开发与测试](../CONTRIBUTING.md) · [插件安装、发布与旧技能备份](PLUGIN.md)
+- [从旧包迁移及导入名兼容说明](MIGRATION.md)
+
+## 历史追溯
+
+[拆分实施计划](SPLIT_PLAN.md)记录已执行的迁移范围，[逐文件迁移归属](MIGRATION_MAP.md)记录代码与资源去向。历次任务的[实施计划](superpowers/plans)保留当时的批准、约束与验收范围。新任务按[当前项目约定](../AGENTS.md)执行。

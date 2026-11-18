@@ -5,7 +5,7 @@ description: Use when planning TPC parameter scans, extracting metrics from exis
 
 # TPC 扫描与分析
 
-先读[插件运行环境](../runtime.md)，再读[数据接入与扫描示例](references/analysis.md)。复用 `topo_modeler.scanner`、`result_reader`、`report` 和 `audit`；拓扑领域任务注册见[服务适配](../topological-modeling/references/service-integration.md)。
+实际运行插件 Python 时查[运行环境](../runtime.md)；接入曲线或编写扫描 runner 时查[数据接入与扫描示例](references/analysis.md)。复用 `topo_modeler.scanner`、`result_reader`、`report` 和 `audit`；拓扑领域任务注册见[服务适配](../topological-modeling/references/service-integration.md)。
 
 记录数据来源、参数组合、运行 ID、频率单位、端口方向和指标定义。只规划组合用 `ParameterScan.plan()`；`run()` 会调用提供的 runner，是否求解由 runner 决定。读取已有数据不自动授权启动新的扫描求解。
 

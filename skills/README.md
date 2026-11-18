@@ -12,6 +12,4 @@
 | [topological-analysis](topological-analysis/SKILL.md) | 扫描、批处理、已有结果指标、报告、审计与领域服务适配 | scanner、batch、result_reader、report、audit、`topo_service` |
 | [topological-optimization](topological-optimization/SKILL.md) | 连续参数/二值晶格优化、等效介质与透镜设计计算 | optimizer、`tpc_toolkit` |
 
-代码定位与依赖准备见[运行环境](runtime.md)；插件安装、分发和更新见[插件说明](../docs/PLUGIN.md)。`mesh_grid` 表示离线晶格几何，不是 CST 电磁求解网格。
-
-通用 CST 会话、API、求解和诊断继续使用独立的 `cst-automation`。TPC 不复制通用 CST 手册、驱动或 MCP；`tpc_toolkit.curves/s2p` 保持兼容转发。
+运行插件内的 Python 时查[运行环境](runtime.md)。安装、分发或更新插件时查[插件说明](../docs/PLUGIN.md)。`mesh_grid` 处理离线晶格几何；通用 CST 会话、求解和诊断由 `cst-automation` 提供。

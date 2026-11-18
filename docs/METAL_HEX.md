@@ -118,7 +118,7 @@ print(result['evidence'])
 
 工程参数是全局短名，prefix/component 不隔离它们；不同规格使用干净工程。改变 layout、centered、probes_enabled、或跨越 ny=1 时，用新 spec 在干净工程重生成；仅改旧历史参数不足以改变分支结构。
 
-实际仿真模板仍遵循 [topological-modeling](../skills/topological-modeling/SKILL.md)：干净参数、fmin/fmax、时域频段裕量和读回。旧模板频段与 notebook 请求不同，旧 Zmin 电壁也不会自动生效。图形或 mock 不证明拓扑带隙、单向传输或阻抗匹配。
+准备仿真模板时执行[模板与频段验收](../skills/topological-modeling/references/evidence.md#template-and-frequency-acceptance)。旧模板频段与 notebook 请求不同，旧 Zmin 电壁也不会自动生效。图形或 mock 不证明拓扑带隙、单向传输或阻抗匹配。
 
 ## 馈源设计来源
 

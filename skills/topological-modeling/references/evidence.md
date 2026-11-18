@@ -1,22 +1,18 @@
 # Evidence and acceptance
 
-Keep these claims separate:
+Report the project or artifact supporting each claim and any missing evidence.
 
-1. **Offline design:** normalized parameters, path coordinates, phase labels, and geometry-rule checks.
-2. **CST geometry:** session opened, build history completed, rebuild/messages and entity checks read back from the named project.
-3. **Solver:** the intended solver run completed and its run identity/results were read from that run.
-4. **Device performance/topology:** full required evidence such as a common band gap, Chern-number calculation, tracked interface modes, convergence, and driven directional measurements.
+- **Offline design** — target configuration, calculated coordinates, phase labels and geometry checks. Draw dimensions and phase order from the target device.
+- **CST geometry and settings** — named project, completed build history, rebuild messages and entity or settings readback.
+- **Existing results** — source project or dataset, run identity, units and port direction. Attribute results to the run that produced them.
+- **Solver completion** — intended solver, completed run identity, results and convergence status.
+- **Performance or topology** — evidence specific to the claim, such as a common band gap, Chern-number calculation, tracked interface modes or converged directional measurements.
 
-A schematic, mock app, successful Python build call, field localization, or saved project does not establish later evidence levels. Report missing stages and exact artifacts.
-
-Use the selected device's configuration and source geometry as the authority. Never transfer dimensions, phase order, or node coordinates from a concept drawing to another device without recalculating them.
+A sketch, mock app, submitted build command, saved project or localized field alone cannot substantiate later stages.
 
 ## Template and frequency acceptance
 
-For each CST template rebuild, record:
-
-- The source template and output project, including whether a clean template or a new blank project was used.
-- The retained parameter table and dependency check; identify removed inherited variables and any unresolved history or settings references.
-- The frequency unit, solver type, band of interest, `fmin`/`fmax` values, and readback showing the solver settings reference these parameters and evaluate to the intended bounds.
-- For the T solver, both margins (`interest_min - fmin` and `fmax - interest_max`) must be positive. Record the reason for the chosen margins; a wider total bandwidth alone does not establish coverage at both ends.
-- Rebuild messages and any remaining errors. Missing readback leaves template acceptance unverified; a clean rebuild and correct frequency range establish settings/geometry evidence only, not a completed solver run or device performance.
+1. Preserve the source template. Work in a clean project and retain only parameters used by the target device and their dependencies. Check history and settings references before removing inherited variables. If cleanup or reuse fails, start from a blank project and recreate the approved settings.
+2. Define CST project parameters `fmin` and `fmax`. Make the solver frequency settings reference both parameters. Record the solver type, units, band of interest and simulation band.
+3. For the time-domain (T) solver, require `fmin < interest_min < interest_max < fmax`. Record both margins and explain their choice for the device and excitation.
+4. After rebuilding, record the source and output project, retained parameter table, removed variables and rebuild messages. Read back the solver references and their evaluated frequency limits. Confirm that references resolve, no unused variables remain and the effective range matches the specified band. Record errors or missing readback and leave the affected checks unverified.

@@ -19,12 +19,14 @@ python -m build --sdist --wheel
 
 ## 跨包联调
 
-TPC 的 `cst` extra 声明 `cst-automation>=0.1,<1`。本地跨包联调应使用与 TPC 同目录的 `cst-automation` checkout 或其本地构建 wheel；不要假设该私有包已发布到 PyPI。将底层发行 wheel 安装进隔离环境后，运行 `tests/test_cst_automation_integration.py`。这项测试使用 `FakeBackend`，只验证 handler 注册和服务分派，不验证 CST。
+TPC 的 `cst` extra 声明 `cst-automation>=0.1,<1`。本地联调使用相邻 checkout 构建的 wheel 或已有兼容 wheel。在隔离开发环境安装 TPC 与底层发行包后，显式选择跨包测试：
+
+```powershell
+python -m pytest -m integration tests/test_cst_automation_integration.py
+```
+
+默认配置排除 integration。核对汇总中该用例实际执行并通过；它覆盖 FakeBackend 的 handler 注册和服务分派。
 
 ## 变更要求
 
-- 保持既有 Python 导入名，除非先更新接口约定和迁移文档。
-- 离线算法、几何构建、结果读取、CST readback 和实际 solver 证据分别记录。
-- CST 会话只在用户显式调用真实 CST 操作时创建；拓扑包不复制通用 service、MCP 或曲线/S 参数实现。
-- 新功能附离线测试；修改领域接口时同步更新 `docs/API_AND_SUPPORT.md`、`docs/VALIDATION.md` 和相关 skills。
-- 不加入来源或再分发许可不清楚的工程、SAT、模型或实验产物。
+遵循[项目约定](AGENTS.md)中的接口兼容、发布和证据要求。新功能附离线测试。领域接口变更时同步更新[支持矩阵](docs/API_AND_SUPPORT.md)、[验证记录](docs/VALIDATION.md)和相关 skill。

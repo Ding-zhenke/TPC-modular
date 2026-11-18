@@ -1,6 +1,6 @@
 # TPC
 
-拓扑光子晶体离线晶格、路径、相区、示意图、DXF、器件模板与拓扑专用 CST 建模适配。目标是让纯设计与拓扑几何分析在没有 CST 的环境中运行；只有实际创建/求解 CST 工程时才需要通用 `cst-automation`。
+拓扑光子晶体离线晶格、路径、相区、示意图、DXF、器件模板与拓扑专用 CST 建模适配。晶格设计与拓扑几何分析可离线运行。CST 工程操作通过 `cst-automation`；共享曲线解析可单独使用该包的数据模块。
 
 ## Codex 插件：一次安装，七个 skills
 
@@ -19,7 +19,7 @@ codex plugin add tpc@tpc-local
 - `topo_modeler`: 离线预检、配置、几何表达、扫描/结果解释，以及惰性加载的 CST 建模入口。
 - `topo_templates`: 拓扑器件模板。
 - `tpc_toolkit`: 拓扑优化与等效介质；通用曲线/S 参数通过兼容入口委托给 `cst-automation`。
-- `topo_service`: 拓扑领域服务适配器；对接协议发布前不可声称已完成端到端服务注册。
+- `topo_service`: 拓扑领域服务适配器。已有跨包测试使用 FakeBackend 验证注册与分派，实机状态见[支持矩阵](docs/API_AND_SUPPORT.md)。
 
 安装基础离线能力：
 
@@ -27,13 +27,7 @@ codex plugin add tpc@tpc-local
 python -m pip install .
 ```
 
-从源码开发并运行完整离线测试：
-
-```powershell
-python -m pip install -e '.[all,dev]'
-python -m pytest
-python -m build --sdist --wheel
-```
+从源码开发、运行测试与构建发行包见[贡献指南](CONTRIBUTING.md)。
 
 包含 DXF/几何、科学和开发依赖：
 
@@ -64,23 +58,6 @@ print(path.xy)
 
 完整的设备参数、构建入口和证据边界见 [API 与支持矩阵](docs/API_AND_SUPPORT.md)。纯离线 CI 不安装 `cst-automation`；跨包注册测试使用本地构建的实际 `cst-automation` wheel 和 fake backend。真实 CST rebuild、结果 readback 和 solver 需要在安装 CST 的机器上单独验证。
 
-## 兼容入口
-
-旧模块名 `mesh_grid`、`topo_modeler`、`topo_templates`、`templates` 和 `tpc_toolkit` 会保留。`templates` shim 仅转发拓扑模板，暂定保留一个次版本周期后移除；新代码应使用 `topo_templates`。`tpc_toolkit.curves` 与 `.s2p` 延迟导入 `cst_automation` 的唯一实现；使用它们时需安装提供离线数据子模块的通用包。
-
-## 文档
-
-- [拆分与实施计划](docs/SPLIT_PLAN.md)
-- [逐文件迁移归属](docs/MIGRATION_MAP.md)
-- [验证记录与未验证边界](docs/VALIDATION.md)
-- [迁移指南](docs/MIGRATION.md)
-- [API 与支持矩阵](docs/API_AND_SUPPORT.md)
-- [TPC 技能目录](skills/README.md)
-- [贡献与验证指南](CONTRIBUTING.md)
-
-几何预览、预检或 mock 结果不代表 CST 实际读回或求解成功，也不能单独证明拓扑带隙、Chern 数或单向传输。
-
-
 ### 金属六边晶格直波导
 
 安装 `tpc-topology[geometry]` 后，可离线生成居中金属晶格及可调叉形馈源：
@@ -94,3 +71,11 @@ files = device.preview(Path('outputs/fork_waveguide').resolve())
 ```
 
 默认 10a AB 晶格与上下半行边界、共享槽口/叉口间隙及双枝节参数见[金属晶格模块说明](docs/METAL_HEX.md)。CST 几何接口只提交建模命令，真实 CST 读回与求解须单独验证。
+
+## 兼容入口
+
+旧模块名 `mesh_grid`、`topo_modeler`、`topo_templates`、`templates` 和 `tpc_toolkit` 会保留。`templates` shim 仅转发拓扑模板，暂定保留一个次版本周期后移除；新代码应使用 `topo_templates`。`tpc_toolkit.curves` 与 `.s2p` 延迟导入 `cst_automation` 的唯一实现；使用它们时需安装提供离线数据子模块的通用包。
+
+## 文档
+
+从[任务技能目录](skills/README.md)选择工作流程。[文档索引](docs/README.md)汇总支持矩阵、验证记录、贡献指南及历史迁移资料。

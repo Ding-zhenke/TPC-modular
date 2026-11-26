@@ -14,9 +14,13 @@ device = ForkWaveguide(spec)
 files = device.preview(Path('outputs/fork_waveguide').resolve())
 ```
 
-dy=√3a/2，y=0 中心行只算一次；upper_rows=5/lower_rows=2 是裁剪边界的位置，不是完整行数量。默认上下边界分别通过原第 5/第 2 行中心，对应保留 4.5/1.5 行；a=.606 mm 时为 y=[−1.0496227894,2.6240569735] mm。调用 `spec.to_dict()` / `ForkWaveguideSpec.from_dict()` 保存和恢复。
+dy=√3a/2，y=0 中心行只算一次；upper_rows=5/lower_rows=2 是裁剪边界的位置，不是完整行数量。默认上下边界分别通过原第 5/第 2 行中心，对应保留 4.5/1.5 行；a=.606 mm 时为 y=[−1.0496227894,2.6240569735] mm。
 
-探针默认尺寸（mm）：wide_width=.213938021932、neck_length=.270、taper_length=.780、fork_length=.320、arm_length=.312、arm_width=.050、gap=.060、stub_length=.190、stub_width=.080、stub_distance=.192、insertion=.012。gap 同时定义槽宽和叉口宽；两支臂和开路枝节上下对称，右探针是左探针关于 x=0 的镜像。W0 是基于 h=.1 mm、εr=3.78、t=0、底部连续参考地的准静态估计，实际材料、地面、频散与匹配尚需验证。
+探针默认尺寸（mm）：wide_width=.213938021932、neck_length=.270、taper_length=.780、fork_length=.320、arm_length=.312、arm_width=.050、gap=.060、stub_length=.190、stub_width=.080、stub_distance=.192、insertion=.012。两支臂和开路枝节上下对称，右探针是左探针关于 x=0 的镜像。W0 是基于 h=.1 mm、εr=3.78、t=0、底部连续参考地的准静态估计，实际材料、地面、频散与匹配尚需验证。
+
+### 叉口与晶格槽口的 gap 联动
+
+`ForkProbeSpec.gap` 对应 CST 全局参数 `g`（mm）。两条支臂的内缘位于 `y = ±g/2`，晶格端部开槽也以这两条线为上下边界。修改这一个字段即可同步改变叉口净宽和晶格槽宽。固定支臂宽度 `arm_width` 时，外缘随之移到 `y = ±(g/2 + arm_width)`。调参后用 `device.geometry()` 复查两端支臂的铜面搭接和基板支撑。
 
 `device.build(app)` 只在调用者提供的干净 CST 工程提交参数化几何；不开启求解、不建立地或端口。离线几何前检包括支臂搭接与基板支撑；自动化测试使用平面几何解释器核对 CST 命令，不等于真实 CST 零厚度布尔读回。
 
@@ -77,7 +81,7 @@ PNG/SVG/JSON 按布局分别命名为 `metal_hex_ab.*`、`metal_hex_ba.*`、`met
 
 None 的初值在创建 spec 时解析为具体数值，并写入 JSON；之后各长度独立可调。CST 派生量 r1=a/√3、p1=k1*r1。源阵列先在旧坐标系生成，再整体平移 sx=−(nx−1)*a/2，保持原晶格内部结构。左探针尖端 xt=−nx*a/2+li，渐变起点 xb=xt−lt，直颈外端 xe=xb−ln；右探针严格按 x→−x 镜像；基板半长 bx=−xe+mg。关闭探针时 bx=nx*a/2+mg。
 
-`ring_inset` 是半径差，单环法向线宽是它乘 cos(30°)，共边铜带可更宽。原 notebook 的 l1→ring_radius、l2→ring_inset、l3/l1→pad_ratio、x1→x_periods、y1→y_half_periods；未用的 e1/e2/l4/x2 等不保留。l4 原注释不能当作新探针净间隙。
+`ring_inset` 是半径差，单环法向线宽是它乘 cos(30°)，共边铜带可更宽。
 
 例：
 
@@ -90,11 +94,17 @@ spec = MetalHexSpec(layout='A_air', taper_length=1.5, neck_length=.3,
 
 构造/几何生成拒绝非有限尺寸、非法内环/周期、非零 t、断开铜面或缺少基板支撑的探针。CST adapter 在任何建模写入前也执行接触和支撑预检。
 
-## 几何与 JSON
+## 离线几何与面积
 
 `MetalHexGeometry` 包含局部单元 `unit_ring/unit_a/unit_b`，全局 `rings/phase_a/phase_b/core_metal`，`probe_left/probe_right`，全部铜面并集 `metal`，以及 `substrate/metal_extent`。metal_extent 是晶格裁剪包络，不含外侧探针。A_air 的 phase_b 为空，关闭探针时 probe_left/right 为空。
 
 `summary()` 同时记录 core_metal_area_mm2 和含探针的 metal_area_mm2。默认 AB 两者约 9.319165634 和 9.996715627 mm²。bottom_blank 是基板下边界到全部铜面下边界的跨度；right_blank 是晶格右边界到基板右边界的距离，包含探针空间，不能当作外边距 mg。
+
+## 旧 notebook 与 JSON 兼容
+
+单片探针模板的新设计使用 `MetalHexSpec(...)`。显式复现旧 notebook 时使用 `MetalHexSpec.legacy_notebook(layout='AB')`，沿用旧坐标放置、关闭探针并保留完整石英。原 notebook 和模板作为只读来源。原字段的映射为 l1 → ring_radius、l2 → ring_inset、l3/l1 → pad_ratio、x1 → x_periods、y1 → y_half_periods。叉形探针的槽宽由上文的 `ForkProbeSpec.gap` 给出。
+
+读取单片探针预览 JSON 时，将其中的 `spec` 交给对应规格类：
 
 ```python
 import json
@@ -103,7 +113,7 @@ restored = MetalHexSpec.from_dict(saved['spec'])
 assert restored == spec
 ```
 
-0.2 版只含旧字段的 JSON 由 from_dict 自动恢复为旧 notebook 放置方式、无探针、完整石英，避免悄悄改变历史设计。显式旧模型：`MetalHexSpec.legacy_notebook(layout='AB')`。新任务使用构造器；若用旧字段集合的字典表达新设计，应显式加 `centered=True`。原 notebook/模板只读，不纳入发行包。
+`MetalHexSpec.from_dict()` 按字段集合识别旧格式。若输入仅含 `lattice_constant`、`substrate_thickness`、`ring_inset`、`pad_ratio`、`x_periods`、`y_half_periods`、`metal_thickness`、`layout` 中的字段，则按旧 notebook 布局恢复。用这些字段描述新的居中设计时，显式加入 `centered=True`。叉形探针预览使用自己的规格类，调用 `ForkWaveguideSpec.from_dict(saved['spec'])` 恢复嵌套的探针参数。
 
 ## CST 接口与证据
 
@@ -116,7 +126,11 @@ print(result['evidence'])
 
 也可调用 `topo_modeler.builders.metal_hex.build_metal_hex(app,spec)`。仅提交参数化几何，使用当前公开 material=、subtract() 等接口；不创建会话、保存工程、配置边界/频率/求解器或运行求解。曲线、旋转和阵列保留表达式依赖，左右馈源采用参数化镜像轮廓。shapes 包含活动角色，A_air 无 phase_b，启用探针时包含 probe_left/right。返回证据是命令提交，CST 零厚度布尔、接触/合并和材料读回仍未实机验证。
 
-工程参数是全局短名，prefix/component 不隔离它们；不同规格使用干净工程。改变 layout、centered、probes_enabled、或跨越 ny=1 时，用新 spec 在干净工程重生成；仅改旧历史参数不足以改变分支结构。
+### 参数变更后的重建条件
+
+CST 参数采用工程级短名；`prefix` 和 `component` 用于对象命名。不同规格使用独立的干净工程。
+
+对于 `MetalHexStraight`，改变 `layout`、`centered` 或 `probes_enabled`，以及将 `y_half_periods`（CST 的 `ny`）从 1 改到 ≥2 或反向改回 1，都会改变生成的历史步骤。此时用新规格重新做离线预检和预览，在干净工程中重新生成几何。若只调整同一分支内已有的长度参数，核对更新后的搭接与支撑，再检查实际 CST 几何读回。
 
 准备仿真模板时执行[模板与频段验收](../skills/topological-modeling/references/evidence.md#template-and-frequency-acceptance)。旧模板频段与 notebook 请求不同，旧 Zmin 电壁也不会自动生效。图形或 mock 不证明拓扑带隙、单向传输或阻抗匹配。
 

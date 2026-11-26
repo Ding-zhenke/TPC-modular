@@ -1,13 +1,23 @@
-# TPC
+# TPC 拓扑光子晶体工具箱
 
-拓扑光子晶体离线晶格、路径、相区、示意图、DXF、器件模板与拓扑专用 CST 建模适配。晶格设计与拓扑几何分析可离线运行。CST 工程操作通过 `cst-automation`；共享曲线解析可单独使用该包的数据模块。
+TPC 用于设计三角与六边晶格中的拓扑光子晶体器件。你可以在本机浏览器中点选域壁、划分 A/B 相区并导出版图，也可以用 Python 从器件参数生成几何和尺寸图。晶格设计可离线完成，创建 CST 工程时通过 `cst-automation` 调用本机 CST。
 
-## Codex 插件：一次安装，九个 skills
+## 按任务开始
 
-本仓库同时提供 `tpc` 插件，包含晶格路径、示意图、拓扑建模、器件模板、域壁路径编辑器、参数扫描、结果分析、优化与等效介质，以及金属六边晶格专用建模九项技能。安装方式、独立运行环境与可分享 ZIP 见[插件说明](docs/PLUGIN.md)。
+| 我想做什么 | 从哪里开始 |
+| --- | --- |
+| 在三角孔晶格上画域壁、接分支、导出毫米 DXF | [域壁路径编辑器](docs/PATH_EDITOR.md) |
+| 用 Python 生成晶格、定义路径或裁剪相区 | [晶格与路径](skills/lattice-paths/SKILL.md) |
+| 画石英基板上金属六边晶格的 AB、BA 或 A—空气直波导 | [金属六边晶格模型与参数](docs/METAL_HEX.md) |
+| 选择波导、天线、透镜或功分器模板，准备 CST 建模 | [器件模板](skills/topological-templates/SKILL.md) · [建模与预检](skills/topological-modeling/SKILL.md) |
+| 规划参数扫描、分析已有 S 参数或优化晶格 | [参数扫描](skills/topological-parameter-scan/SKILL.md) · [结果分析](skills/topological-analysis/SKILL.md) · [优化](skills/topological-optimization/SKILL.md) |
+
+## 安装 Codex 插件
+
+在仓库根目录运行以下命令即可注册本地市场并安装 `tpc`。安装后新开一个 Codex 聊天即可使用[九项技能](skills/README.md)。使用分发 ZIP 时，先解压并进入其中的 `tpc` 目录。[插件安装与分发说明](docs/PLUGIN.md)
 
 ```powershell
-codex plugin marketplace add "<本仓库或解压后的 tpc 目录>"
+codex plugin marketplace add "$PWD"
 codex plugin add tpc@tpc-local
 ```
 
@@ -21,7 +31,9 @@ codex plugin add tpc@tpc-local
 - `tpc_toolkit`: 拓扑优化与等效介质；通用曲线/S 参数通过兼容入口委托给 `cst-automation`。
 - `topo_service`: 拓扑领域服务适配器。已有跨包测试使用 FakeBackend 验证注册与分派，实机状态见[支持矩阵](docs/API_AND_SUPPORT.md)。
 
-安装基础离线能力：
+### 安装 Python 包
+
+直接使用 Python API 时，在仓库根目录用 Python 3.9 或更高版本安装基础包。
 
 ```powershell
 python -m pip install .
@@ -29,16 +41,16 @@ python -m pip install .
 
 从源码开发、运行测试与构建发行包见[贡献指南](CONTRIBUTING.md)。
 
-包含 DXF/几何、科学和开发依赖：
+运行下方金属晶格预览和域壁编辑器示例时，安装几何依赖。
 
 ```powershell
-python -m pip install '.[geometry,science,dev]'
+python -m pip install '.[geometry]'
 ```
 
-需要 CST 建模时，先从相邻 checkout 或其本地 wheel 安装兼容版本的 `cst-automation`，再安装本包的 `cst` extra 和本机 CST 提供的 Python API。例如：
+科学计算、YAML 配置和开发测试可分别选装 `science`、`yaml` 和 `dev`。需要 CST 建模时，准备好本机 CST 提供的 Python API，再安装兼容版本的 `cst-automation` 和本包的 `cst` extra。若两个源码仓库位于同一父目录，可运行以下命令。
 
 ```powershell
-python -m pip install /path/to/cst_automation-0.1.0-py3-none-any.whl
+python -m pip install ../cst-automation
 python -m pip install '.[cst]'
 ```
 

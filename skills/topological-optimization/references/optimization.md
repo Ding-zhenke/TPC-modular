@@ -24,7 +24,5 @@ print(result.best_params, result.best_fitness, result.seed, result.history)
 | 连续实数/整数参数 | `continuous_variables(spec)`；种群至少 2，代数至少 1 |
 | 二值晶格图案 | `binary_variables(n_bits, shape=(rows, cols))`；位数等于行列乘积，种群至少 4，按成对交叉使用偶数种群 |
 | 二值原始算子 | [ga_optimizer.py](../../../tpc_toolkit/ga_optimizer.py)，通常通过统一优化器调用 |
-| 等效介电常数/折射率 | [effective_medium.py](../../../tpc_toolkit/effective_medium.py) 的 `effective_permittivity(ep1,s1,ep2,s2)`、`permittivity_to_refractive_index(ep)` |
-| 透镜参数到几何 | [lens.py](../../../topo_modeler/builders/lens.py) 的规格、环孔计算；实际建模另走 CST |
 
 二值模式共享 NumPy 全局随机状态，seed 要记录；避免在同一进程并发运行相互干扰的二值优化。原始 `selection()` 有固定种群假设，统一优化器没有调用它。目标函数失败、非有限值或无法收敛的真实求解不能作为有效器件最优结果。按[证据边界](../../topological-modeling/references/evidence.md)报告。

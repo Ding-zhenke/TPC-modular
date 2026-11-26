@@ -1,6 +1,6 @@
 {
   "name": "tpc",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "拓扑光子晶体晶格、路径、示意图、器件模板、分析、优化与金属六边晶格：九项技能。",
   "author": {
     "name": "Dingzhenke"

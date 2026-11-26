@@ -11,5 +11,5 @@ Before constructing new device geometry, present a parameter-backed sketch and w
 
 - To select an existing device, use [device templates](../topological-templates/SKILL.md).
 - To prepare or rebuild a CST template, follow [template and frequency acceptance](references/evidence.md#template-and-frequency-acceptance) through readback.
-- To report geometry or solver claims, use the [evidence requirements](references/evidence.md). For scans or existing results, use [analysis](../topological-analysis/SKILL.md).
+- To report geometry or solver claims, use the [evidence requirements](references/evidence.md). For parameter sweeps, use [parameter scan](../topological-parameter-scan/SKILL.md). For existing results, use [analysis](../topological-analysis/SKILL.md).
 - To register domain jobs, use [service integration](references/service-integration.md).

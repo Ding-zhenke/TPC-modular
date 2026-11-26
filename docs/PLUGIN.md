@@ -1,6 +1,6 @@
 # TPC 插件
 
-插件标识 `tpc`，本地市场标识 `tpc-local`，当前源码版本 `0.5.0`。一次安装可获得[七个 skills](../skills/README.md)：晶格路径、示意图、拓扑建模、器件模板、扫描分析、优化与等效介质。
+插件标识 `tpc`，本地市场标识 `tpc-local`，当前源码版本 `0.6.0`。一次安装可获得[九个 skills](../skills/README.md)：晶格路径、域壁路径编辑器、示意图、拓扑建模、器件模板、参数扫描、结果分析、优化与等效介质、金属六边晶格。
 
 ## 安装
 
@@ -14,7 +14,7 @@ codex plugin list --marketplace tpc-local --json
 
 也可在桌面应用的插件目录里，从本地 `TPC Local` 来源安装 `TPC 光子晶体工具箱`。界面入口因版本而异，命令行返回的启用状态与技能缓存清单用于确认实际安装。安装后开新聊天；若界面尚未刷新，重启应用再检查。
 
-插件代码、文档和七个技能一同进入插件缓存，不依赖原始 checkout。Python 依赖与 CST 环境不是插件安装器自动提供的；首次使用按[运行环境说明](../skills/runtime.md)检查或准备 Python。离线功能不需要 CST；实际 CST 建模/结果 API 仍依赖独立的 `cst-automation` 和本机 CST。
+插件代码、文档和九个技能一同进入插件缓存，不依赖原始 checkout。Python 依赖与 CST 环境不是插件安装器自动提供的；首次使用按[运行环境说明](../skills/runtime.md)检查或准备 Python。离线功能不需要 CST；实际 CST 建模/结果 API 仍依赖独立的 `cst-automation` 和本机 CST。
 
 ## 构建与分享
 
@@ -24,7 +24,7 @@ codex plugin list --marketplace tpc-local --json
 python -B scripts/build_plugin.py --output dist
 ```
 
-输出 `dist/tpc-0.5.0.zip`，内部只有一个 `tpc/` 插件目录，含代码、技能、文档、许可证和验收脚本。解压后以其 `tpc/` 为市场根目录注册，再安装同一插件即可。发布包的市场配置是可移植相对路径，不带开发机路径。
+输出 `dist/tpc-0.6.0.zip`，内部只有一个 `tpc/` 插件目录，含代码、技能、文档、许可证和验收脚本。解压后以其 `tpc/` 为市场根目录注册，再安装同一插件即可。发布包的市场配置是可移植相对路径，不带开发机路径。
 
 打包器按目录与扩展名白名单选文件，不复制整个工作树；排除 `.git`、`work`、缓存、环境、工程大文件和机器配置。根 `plugin.json` 使用 Agent Plugins 清单，`.codex-plugin/plugin.json` 提供 Codex 兼容入口；技能唯一源位于 `skills/`。本插件没有 MCP 或自动启动钩子。
 
@@ -37,7 +37,7 @@ python -B "<解压目录>/tpc/scripts/plugin_runtime.py" --check --extras geomet
 python -B "<解压目录>/tpc/scripts/verify_plugin.py" --output "<工作区>/tpc-plugin-check"
 ```
 
-验收包含七个技能入口、三角路径、示意 PNG、六边晶格 DXF、功分器配置预检、合成 S 参数指标、两点扫描报告、极小连续优化和等效介质计算。输出 JSON 记录代码来源并确认未导入 CST。所有数值和图形均是接口验证例子。
+验收包含九个技能入口、三角路径、示意 PNG、六边晶格 DXF、功分器配置预检、合成 S 参数指标、两点扫描报告、极小连续优化、等效介质及金属六边晶格 AB 参数图。输出 JSON 记录代码来源并确认未导入 CST。所有数值和图形均是接口验证例子。
 
 ## 更新与旧技能
 

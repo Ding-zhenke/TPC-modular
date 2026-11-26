@@ -1,14 +1,10 @@
 ---
 name: topological-analysis
-description: Use when planning TPC parameter scans, extracting metrics from existing S parameters, comparing runs, or generating topology-device result reports and audits.
+description: Use when extracting metrics from existing TPC S parameters, comparing completed runs, or generating topology-device result reports and audits.
 ---
 
-# TPC 扫描与分析
+# TPC 已有结果分析
 
-实际运行插件 Python 时查[运行环境](../runtime.md)；接入曲线或编写扫描 runner 时查[数据接入与扫描示例](references/analysis.md)。复用 `topo_modeler.scanner`、`result_reader`、`report` 和 `audit`；拓扑领域任务注册见[服务适配](../topological-modeling/references/service-integration.md)。
+记录曲线来源、对应的参数组合和运行 ID，核对频率单位、端口方向和指标定义。按[运行环境](../runtime.md)选择 Python；读取已有曲线并导出指标时使用 `ResultReader`，接入内存数据见[曲线读取示例](references/analysis.md)。
 
-记录数据来源、参数组合、运行 ID、频率单位、端口方向和指标定义。只规划组合用 `ParameterScan.plan()`；`run()` 会调用提供的 runner，是否求解由 runner 决定。读取已有数据不自动授权启动新的扫描求解。
-
-原始 S 参数字典需要适配读取协议后交给 `ResultReader`。扫描 runner 直接返回字典表示最终指标，不能把曲线字典放进去期待 `metric_specs` 再处理。
-
-报告使用[证据与验收](../topological-modeling/references/evidence.md)区分离线算法、已有结果读取、实体读回和真实求解。合成数据例子只证明分析流程可用，不能证明器件性能或拓扑性质。
+用 `report` 和 `audit` 汇总结果，按[证据与验收](../topological-modeling/references/evidence.md)标注数据来自合成示例、已有工程读回或实际求解。规划参数组合或执行批处理见[参数扫描](../topological-parameter-scan/SKILL.md)；注册领域任务见[服务适配](../topological-modeling/references/service-integration.md)。

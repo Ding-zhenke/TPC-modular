@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "tpc",
-  "version": "0.5.0",
-  "description": "拓扑光子晶体晶格、路径、示意图、器件模板、分析、优化与金属六边晶格：七项技能。",
+  "version": "0.6.0",
+  "description": "拓扑光子晶体晶格、路径、示意图、器件模板、分析、优化与金属六边晶格：九项技能。",
   "author": {
     "name": "Dingzhenke"
   },
@@ -21,7 +21,7 @@
       "interface": {
         "displayName": "TPC 光子晶体工具箱",
         "shortDescription": "晶格、路径、示意图、模板、分析与优化",
-        "longDescription": "包含七项技能和离线 Python 源码，支持金属六边晶格 AB/BA/A—空气和双枝节叉形馈源。实际 CST 操作通过独立 cst-automation。",
+        "longDescription": "包含九项技能和离线 Python 源码，支持金属六边晶格 AB/BA/A—空气和双枝节叉形馈源。实际 CST 操作通过独立 cst-automation。",
         "developerName": "Dingzhenke",
         "category": "Developer Tools",
         "capabilities": [

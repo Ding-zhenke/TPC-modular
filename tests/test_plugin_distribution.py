@@ -30,6 +30,7 @@ def test_archive_contains_portable_skills_and_code_without_private_files(tmp_pat
         assert 'tpc/LICENSE' in names
         skills = {Path(n).parts[2] for n in names if n.endswith('/SKILL.md')}
         assert skills == {
+            'domain-wall-editor', 'topological-parameter-scan',
             'lattice-paths', 'topological-modeling', 'topological-schematic',
             'topological-templates', 'topological-analysis', 'topological-optimization',
             'metal-hex-topological-modeling',
@@ -143,7 +144,7 @@ def test_offline_smoke_uses_extracted_code_and_outputs_only_to_workspace(tmp_pat
                             cwd=tmp_path, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     status = json.loads(result.stdout)
-    assert len(status['skills']) == 7
+    assert len(status['skills']) == 9
     assert status['checks']['metal_hex_area_mm2'] == pytest.approx(9.996715627415611)
     assert status['checks']['metal_hex_core_area_mm2'] == pytest.approx(9.319165634016292)
     assert (output / 'metal_hex' / 'metal_hex_ab.svg').is_file()

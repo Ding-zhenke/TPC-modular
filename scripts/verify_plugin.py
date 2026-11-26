@@ -31,7 +31,8 @@ def verify(output: Path):
     from topo_templates.fork_waveguide import ForkWaveguide
 
     skills = sorted(p.parent.name for p in (ROOT / 'skills').glob('*/SKILL.md'))
-    expected = {'lattice-paths', 'topological-modeling', 'topological-schematic',
+    expected = {'domain-wall-editor', 'topological-parameter-scan',
+                'lattice-paths', 'topological-modeling', 'topological-schematic',
                 'topological-templates', 'topological-analysis', 'topological-optimization',
                 'metal-hex-topological-modeling'}
     assert set(skills) == expected, skills

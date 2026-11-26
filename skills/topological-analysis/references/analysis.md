@@ -1,4 +1,4 @@
-# 离线数据与扫描
+# 已有曲线读取
 
 [ResultReader](../../../topo_modeler/result_reader.py) 接受 `.cst` 路径或提供 `read_all_s_parameters(run_id=0)` 的对象。已有内存数据可用轻量适配器；每条曲线采用 `(频率 GHz, 复数幅度)` 点列，不能混入 dB 幅度：
 
@@ -24,37 +24,3 @@ print(reader.value_at('S2,1', 110.0))  # 20*log10(0.5) = -6.0206 dB
 频率单位由数据源确认再统一为 GHz；已有 dB 数据先按 `10**(dB/20)` 转成幅度。端口方向取自目标工程，不由文件名或偏置极性推断。`.cst` 路径读取需要外部 CST 结果 API；`resonances()` / `resonance_shift()` 和 `tpc_toolkit.curves/s2p` 需要 `cst-automation` 离线解析模块。
 
 内存数据源使用 `reader.export_csv(path, in_db=False)` 导出复数，每条曲线有 `_re`、`_im` 两列。合写一个 CSV 时，各曲线的频率序列需一致。
-
-扫描的两种 runner 返回值不能混淆：
-
-| 返回值 | 含义 |
-|---|---|
-| `ResultReader` 或兼容 reader | 对曲线执行 `metric_specs` 指标函数 |
-| 字典，如 `{'S21@110': -6.02}` | 已提取完成的标量指标，不再执行 `metric_specs` |
-| `.cst` 路径字符串 | 通过外部 CST 结果接口读取已有文件 |
-
-下面只用合成曲线，输出目录 `out` 应由任务脚本给出工作区绝对路径：
-
-```python
-from pathlib import Path
-from topo_modeler.config import example_config
-from topo_modeler.scanner import ParameterScan, value_metric
-
-out = Path.cwd() / 'tpc-analysis'
-out.mkdir(parents=True, exist_ok=True)
-scan = ParameterScan(
-    example_config('straight_waveguide'), {'length': [8, 10]},
-    runner=lambda point: reader, workdir=str(out),
-    metric_specs={'S21@110': value_metric('S2,1', 110.0)},
-    required_metrics=['S21@110'],
-)
-print([(p.name, p.params) for p in scan.plan()])
-scan.run()
-assert len(scan.succeeded) == 2
-scan.export_csv(str(out / 'scan.csv'))
-scan.report(str(out / 'scan.html'))
-```
-
-这里两个扫描点复用同一合成曲线，验证汇总接口而非参数对性能的影响。真实 runner 必须把各点参数映射到各自结果；保留 `failed`、错误详情、运行身份和指标缺项。批处理接口见 [batch.py](../../../topo_modeler/batch.py)，结构化审计见 [audit.py](../../../topo_modeler/audit.py)。
-
-`required_metrics` 适用于指标字典和 reader。缺少指定指标或值为 NaN、无穷大时，该点记入 `scan.failed`。默认空序列允许只执行、不提取指标的扫描。再次调用 `run()` 会重新评估各点，汇总只包含本次的指标和错误。
